@@ -15,6 +15,11 @@ class VacancyLevel extends Model
         $this->remainingCount = $remainingCount;
     }
 
+    public function __toString()
+    {
+        return $this->mark();
+    }
+
     # 今後変更されそうなのは記号→記号の方が不安定なのでslugに分岐処理を統一
     public function mark(): string {
         $marks = ['empty' => '×', 'few' => '△', 'enough' => '◎'];
