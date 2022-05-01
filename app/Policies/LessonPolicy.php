@@ -2,13 +2,31 @@
 
 namespace App\Policies;
 
-use App\Models\Models\Lesson;
+use App\Models\Lesson;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LessonPolicy
 {
     use HandlesAuthorization;
+
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Lesson  $lesson
+     * @return bool
+     */
+    public function reserve(User $user, Lesson $lesson): bool
+    {
+        try {
+            $user->canReserve($lesson);
+        } catch (Exception $e) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Determine whether the user can view any models.
