@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 // use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
@@ -28,10 +29,12 @@ class LessonControllerTest extends TestCase
         $lesson = Lesson::factory()->create(['name' => '楽しいヨガレッスン', 'capacity' => $capacity]);
         for ($i = 0; $i < $reservationCount; $i++) {
             $user = User::factory()->create();
+            UserProfile::factory()->create(['user_id' => $user->id]);
             $lesson->reservations()->save(Reservation::factory()->make(['user_id' => $user]));
         }
 
         $user = User::factory()->create();
+        UserProfile::factory()->create(['user_id' => $user->id]);
         $this->actingAs($user);
 
         $response = $this->get("/lessons/{$lesson->id}");
