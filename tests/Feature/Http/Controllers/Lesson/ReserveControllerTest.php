@@ -4,8 +4,10 @@ namespace Tests\Feature\Http\Controllers\Lesson;
 
 use App\Models\Lesson;
 use App\Models\Reservation;
+use App\Notifications\ReservationNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Http\Response;
 use Tests\Factories\Traits\CreatesUser;
 use Tests\TestCase;
@@ -21,11 +23,18 @@ class ReserveControllerTest extends TestCase
      */
     public function testInvoke_正常系()
     {
+        Notification::fake();
+
         $lesson = Lesson::factory()->create();
         $user = $this->createUser();
         $this->actingAs($user);
 
         $response = $this->post("/lessons/{$lesson->id}/reserve");
+
+        // 指定するユーザーに通知が送信されたことをアサート
+        Notification::assertSentTo(
+            [$user], ReservationNotification::class
+        );
 
         $response->assertStatus(Response::HTTP_FOUND);
         $response->assertRedirect("/lessons/{$lesson->id}");
